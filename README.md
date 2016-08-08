@@ -238,13 +238,14 @@ we think it is grete and it leave some space for improvization while holding eno
 
 # chalanges :
 
-well we wont cry a lot here ... 
-the midi file were alot of work 
-the model of that kind was much greater then a normal text rnn whould have been and it was hard 
-amazon server cost money and normal computers are to weak to process this kind of data eficiantely and the student offer of amazon dont support AWS EC2 server !!! 
-so the course stuff baisicly told us go spend your money we dont care which was not ok ...
+* well we wont cry a lot here ... 
+*  the midi file were alot of work  
+*   the model of that kind was much greater then a normal text rnn whould have been and it was hard and bad choice in time terms
+*   amazon server cost money and normal computers are to weak to process this kind of data eficiantely 
+* ###  the student offer of amazon dont support AWS EC2 server !!! 
+  so the course stuff baisicly told us go spend your money we dont care which was not ok ...
 that all 
-listen to the midi files we created in the composition output folder 
-and have fun 
+
+### listen to the midi files we created in the composition samples folder and have fun 
 
 
