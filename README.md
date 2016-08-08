@@ -30,12 +30,12 @@ if __name__ == '__main__':
     if os.listdir(filedest) == []:
         data = midiHandler.flattenDirectory(filePath,filedest)
     songsDic = midiHandler.loadMidiData(filedest)
-    m = model.Model([90, 90], [30, 16] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
-    trainDataPart(m, songsDic, 10)
+    m = model.Model([300, 300], [100, 50] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
+    trainDataPart(m, songsDic, 10000) 
     pickle.dump(m.learned_config, open(modelDest+"final_learned_config.p", "wb"))
     generatMusicFunction(m,songsDic,10,name=genFile)
     print 'calculation similarity started '
-    sim = calculateSimilarity(modelDest+genFile+'.mid',filedest,120)#64)
+    sim = calculateSimilarity(modelDest+genFile+'.mid',filedest,64) # take long time 
     with open(modelDest+"logFile.txt", "w") as text_file:
         text_file.write('calculation similarity started ')
         text_file.write('similrity : ' + str(sim) + " %")
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         data = midiHandler.flattenDirectory(filePath,filedest)
     songsDic = midiHandler.loadMidiData(filedest)
     m = model.Model([300, 300], [100, 50] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
-    # trainDataPart(m, songsDic, 8000)
+    # trainDataPart(m, songsDic, 10000)
     # pickle.dump(m.learned_config, open("output/final_learned_config.p", "wb"))
     mlean = pickle.load( open("output/params4100.p", "rb")) # here you enter the model saved 
     m.learned_config = mlean
