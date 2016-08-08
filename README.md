@@ -179,7 +179,55 @@ our moder gave us a stady report of the error of the training in each Epoch from
 ![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/Error.jpg " error   rnn ")( learning   error )
 
 as we can see here and the log file  the graph got pretty steady on error mark of about 350 .. to get better results and keep lowering the error rate we should have pick more monotonic music or smaller music set or a larger net or may be just much more epochs (we ran out of time due to the fact each epoch is about 30 seconds on out best machine. 
+this error show us how good the model can explain the data and recreate music close to it (350 is actually a pretty good number we started from 66000 )
 
+### Testing 
+another test we made on the ready composition is comperison of its parts(chunks in size of 64 time steps) to the shortest distance part in the original data set we trained upon. it means for each moving step of the composition created we looking for the nearest part of the same size in the data and after we get all the distances we do avarage on the distanse and getting a value of how close the generated data to the original data.
 
+```{r loadModel , message=FALSE, results='hide'}
+def calculateSimilarity(testedFile,sourcePath,chuckSize,randomSamples = None):
+    print 'start calculating similarity may take long time'
+    from scipy.spatial import distance
+    midiHandler = MDH.MidiDataHandler()
+    testedFile = midiHandler.midiFileToDataMatrix(testedFile)
+    sorceSongsDict = midiHandler.loadMidiData(sourcePath)
+    testedChunkCount = len(testedFile) - chuckSize
+    if testedChunkCount <= 0:
+        raise IOError('input size is bigger then chunk size')
+    if randomSamples is not None:
+        testedChunkCount = np.random.randint(0,testedChunkCount,min(randomSamples,len(testedFile)) ).tolist()
+    else :
+        testedChunkCount = range(testedChunkCount)
+
+    similarity = np.ones((len(testedChunkCount),1))
+
+    for i , testedChunkStrat in enumerate(testedChunkCount):
+        Aflat =  np.array(testedFile[testedChunkStrat : min( testedChunkStrat+chuckSize,len(testedFile))]).flatten()
+        minDist = 9999
+        for song in sorceSongsDict.values():
+            songChunkCount = len(song) - chuckSize
+            tempRes = np.ones((songChunkCount,1))
+            for songChunkStart in range(songChunkCount):
+                Bflat =np.array(song[songChunkStart:min(songChunkStart+chuckSize,len(song))]).flatten()
+                tempRes[songChunkStart] = distance.cosine( Aflat, Bflat )
+            minDist = min(minDist,np.min(tempRes))
+        similarity[i] = minDist
+    return (1-np.average(similarity)) *  100
+```
+the function has an opi
+
+### in the run with the model we got about 87.54 % of accuracy by that function of similarity! 
+we think it is grete and it leave some space for improvization while holding enough of the original data music ideas 
+
+# chalanges :
+
+well we wont cry a lot here ... 
+the midi file were alot of work 
+the model of that kind was much greater then a normal text rnn whould have been and it was hard 
+amazon server cost money and normal computers are to weak to process this kind of data eficiantely and the student offer of amazon dont support AWS EC2 server !!! 
+so the course stuff baisicly told us go spend your money we dont care which was not ok ...
+that all 
+listen to the midi files we created in the composition output folder 
+and have fun 
 
 
