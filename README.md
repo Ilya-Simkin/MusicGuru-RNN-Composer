@@ -158,10 +158,27 @@ of the hidden nodes from each layer during each training step.
 This prevents the nodes from gravitating toward fragile dependencies on each other and instead promotes specialization. 
 (We can implement this by multiplying a mask with the outputs of each layer. Nodes are "removed" by zeroing their output in the given time step.)
 
+# Experiments and results:
 
+So as mentianed before there is a big midi file collection we gethered and classified manually (was fun actually ) .
+You can use it as a train set for new models . 
+the model we trained was made with midi from the 
+Our model used two hidden time-axis layers, each with 300 nodes, and two note-axis layers, with 100 and 50 nodes, respectively.
+```{r loadModel , message=FALSE, results='hide'}
+m = model.Model([300,300],[100,50], dropout=0.5)
+```
+you can change it as you wish in the train function.
+we trained it using a dump of 100 midi files of the  the [ Nottingham dataset of classic music](http://ifdo.ca/~seymour/nottingham/nottingham_database.zip), in batches of 10 randomly-chosen chunks of data each epoch (more then that gave us problames with the memory even on big Amazon web servers AMI with 60 G of mem .(Warning about using spot instances: Be prepared for the system to go down without warning).
+Finally, you can generate a full composition after training is complete. The function gen_adaptive in main.py will generate a piece and also prevent long empty gaps by increasing note probabilities if the network stops playing for too long. (the 10 in the function)
+```{r gener , message=FALSE, results='hide'}
+generatMusicFunction(m,songsDic,10,name="compositionName")
+```
 
+our moder gave us a stady report of the error of the training in each Epoch from which we created a graph of learning rate :
 
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/Error.jpg " error   rnn ")( learning   error )
 
+as we can see here and the log file  the graph got pretty steady on error mark of about 350 .. to get better results and keep lowering the error rate we should have pick more monotonic music or smaller music set or a larger net or may be just much more epochs (we ran out of time due to the fact each epoch is about 30 seconds on out best machine. 
 
 
 
