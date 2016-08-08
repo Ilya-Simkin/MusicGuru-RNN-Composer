@@ -11,13 +11,13 @@ An assignment in a course to develop an RNN with Theano to make the computer lea
 * Ilya Simkin, id : 305828188
 * Or May-Paz, id : 301804134
 
-## Introduction
+# Introduction
 Recurrent Neural Networks (RNNs) are popular models that have shown great promise in many NLP tasks. but despite their recent popularity in the field of text analysis they can be used in many other fields like the use google dose with them in the field of computer vision.
 in this work we are trying to train the computer to compose music which is as well a trainable thing just as painting or writing correctly.
 
 This post assumes a familiarity with machine learning and neural networks. For a good overview of RNN's, I highly recommend reading Andrej Karpathy's excellent blog post [Here](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) for an in-depth explanation.
 
-## Data
+# Data Handeling
 As mentioned before our project is aiming to work with Musical data so first of all we needed to find a proper digital music format to work with. Obviously we stopped our choice on midi files due the fact that they the best representation of digital music, other choices were the more popular and commonly used mp3 files but those files weight much more and have much more analogical structure. We wanted to work with something closer to sheet music even thought of creating a computer vision solution to scan and translate real sheet music of notes but it would add much unneeded complexity. 
 
 ### So a little about midi files: 
@@ -26,9 +26,13 @@ If you give a look in [Wikipedia](https://en.wikipedia.org/wiki/MIDI):
 MIDI (/ˈmɪdi/; short for Musical Instrument Digital Interface) is a technical standard that describes a protocol, digital interface and connectors and allows a wide variety of electronic musical instruments, computers and other related devices to connect and communicate with one another…
 
 Basically a normal midi file is a set of event codded in binary with commands that create a set of notes. 
+there are many type of Events part of them have no connection to the music in the file or even has the lyrics of the song but there is notes events as well.
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/images/midiEvents.JPG "Midi event flow example")
+
 •	Each note event has a Velocity which is the analogical form of how hard you would hit a piano key (the faster it will be louder)
 •	As well each note Event has the pitch value. It is translated to how low or high is the sound, such that lower pitch means lower note in terms of sound frequency.
 
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/images/pianopitchMidi.jpg "Midi Pitch To piano Note")
 Due to the fact that we want to learn something that close to one instrument music we had to transform all the data to a pitch and velocity common for piano playing .
 
 ### Another important information we needed to think about is the time context;
@@ -44,7 +48,9 @@ Midi files may have many different instruments which play on different channels,
 We had to write an algorithm that will flatten the file in a way that it will be played in a way equivalent to one piano.  (Maybe one will need 5 hands to play it in the right way, but that’s not our problem ;-)  ) .
 All the data handling was written in python and contained in the object:  MidiFileTools under DataHandler/MidiFileTools this class is the handler of one midi file, while depended on great package called "python-midi" which was a great help in reading and parsing a binary midi file into a set of events.
 
-
 ## Music Language Modeling
 
-Music Language Modeling is the problem of modeling symbolic sequences of polyphonic music in a completely general piano roll representation. Piano roll representation is a key distinction here, meaning we're going to use the symbolic note sequences as represented by sheet music, as opposed to more complex, acoustically rich audio signals. MIDI files are perfect for this, as they encode all the note information exactly to how it would be displayed on a piano roll.
+After we done to working with the midi file we need to transfer it to some thing that theano can work with.
+so the next step is music manguage modeling,it is the problem of modeling symbolic sequences of polyphonic music in a completely general piano roll representation. Piano roll representation is a key distinction here, meaning we're going to use the symbolic note sequences as represented by sheet music, as opposed to more complex, acoustically rich audio signals. MIDI files are perfect for this, as they encode all the note information exactly to how it would be displayed on a piano roll.
+
+
