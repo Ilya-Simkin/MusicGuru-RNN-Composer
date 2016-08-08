@@ -31,16 +31,16 @@ there are many type of Events part of them have no connection to the music in th
 ![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/midiEvents.JPG "Midi event flow example")
 (midi event flow example)
 
-•	Each note event has a Velocity which is the analogical form of how hard you would hit a piano key (the faster it will be louder)
-•	As well each note Event has the pitch value. It is translated to how low or high is the sound, such that lower pitch means lower note in terms of sound frequency.
+*	Each note event has a Velocity which is the analogical form of how hard you would hit a piano key (the faster it will be louder)
+* As well each note Event has the pitch value. It is translated to how low or high is the sound, such that lower pitch means lower note in terms of sound frequency.
 ![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/pianopitchMidi.jpg "Midi Pitch To piano Note")(Midi Pitch To piano Note)
 
 Due to the fact that we want to learn something that close to one instrument music we had to transform all the data to a pitch and velocity common for piano playing .
 
 ### Another important information we needed to think about is the time context;
 Each event in the midi file has a tick count which is the delay between the execution of the event and the previous event. But the tricky thing is that tick is not an Absolut time unit it is relative to 2 things:
-•	The tempo which is the "how fast ticks should pass"
-•	And the resolution which is how much tempo units there is in a second.
+*	The tempo which is the "how fast ticks should pass"
+*	And the resolution which is how much tempo units there is in a second.
 This was a major thing because that meant that one midi file can have many different areas in which the "time of the note" is different from each other.
 
 So one of the hardest thing we had to do is to resample all the midi file to be in one tempo and resolution and recalculate all the time stamps of the event so the music won't change.
@@ -63,13 +63,15 @@ We chose to set the time frame intervals in a way that will give us the option t
 
 To make things make more sense we used an idea of a similar works we saw online, the extra data that is added to each time frame matrix row will give context to the played notes and make them combine melodies that will be nicer for human ears :
  
-•	Position: The MIDI note value of the current note. Used to get a vague idea of how high or low a given note is, to allow for differences (like the concept that lower notes are typically chords, upper notes are typically melody).
-•	Pitch class : extra 12 features added that will be 1 at the position of the current note, starting at 'Do' for 0 and increasing by 1 per half-step, and 0 for all the others. Used to allow selection of more common chords (i.e. it's more common to have a C major chord than an E-flat major chord)
-•	Previous Vicinity: extra features that gives context for surrounding notes in the last time steps, one octave in each direction. The value at index 2(i+12) is 1 if the note at offset i from current note was played last time step, and 0 if it was not. The value at 2(i+12) + 1 is 1 if that note was articulated last time step, and 0 if it was not. (So if you play a note and hold it, first time step has 1 in both, second has it only in first. If you repeat a note, second will have 1 both times.)
-•	Previous Context : Value at index i will be the number of times any note x where (x-i-pitch class) mod 12 was played last time step. Thus if current note is "Do" and there were 2 "Mi" at the  last time step, the value at index 4 (since "Mi"  is 4 half steps above "Do" ) would be 2.
-•	Beat : Essentially a binary representation of position within the measure, assuming 4/4 time (due to the fact that we pretty much flatten the music to be 4/4 in the previse steps of midi flattening  ). With each row being one of the beat inputs, and each column being a time step, it basically just repeats the following a constant petter.
+*	Position: The MIDI note value of the current note. Used to get a vague idea of how high or low a given note is, to allow for differences (like the concept that lower notes are typically chords, upper notes are typically melody).
+*	Pitch class : extra 12 features added that will be 1 at the position of the current note, starting at 'Do' for 0 and increasing by 1 per half-step, and 0 for all the others. Used to allow selection of more common chords (i.e. it's more common to have a C major chord than an E-flat major chord)
+*	Previous Vicinity: extra features that gives context for surrounding notes in the last time steps, one octave in each direction. The value at index 2(i+12) is 1 if the note at offset i from current note was played last time step, and 0 if it was not. The value at 2(i+12) + 1 is 1 if that note was articulated last time step, and 0 if it was not. (So if you play a note and hold it, first time step has 1 in both, second has it only in first. If you repeat a note, second will have 1 both times.)
+*	Previous Context : Value at index i will be the number of times any note x where (x-i-pitch class) mod 12 was played last time step. Thus if current note is "Do" and there were 2 "Mi" at the  last time step, the value at index 4 (since "Mi"  is 4 half steps above "Do" ) would be 2.
+*	Beat : Essentially a binary representation of position within the measure, assuming 4/4 time (due to the fact that we pretty much flatten the music to be 4/4 in the previse steps of midi flattening  ). With each row being one of the beat inputs, and each column being a time step, it basically just repeats the following a constant petter.
 
-A trained model outputs the conditional distribution of notes at a time step, given the all the time steps that have occurred before it. One problem with this naive formulation is that the amount of potential note configurations is too high (2N for N possible notes) to take the softmax classification approach normally language modeling.
+### complexity problame !!!
+A trained model outputs the conditional distribution of notes at a time step, given the all the time steps that have occurred before it. One problem with this naive formulation is that the amount of potential note configurations is too high (2N for N possible notes+ all the extra data we gave in context) to take the softmax classification approach normally language modeling.
 Instead, we found works that used something called a sigmoid cross-entropy loss function to predict the probability of whether each note class is active or not separately.
+
 
 
