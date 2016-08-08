@@ -1,12 +1,13 @@
 import cPickle as pickle
 import os
-from random import random
+from random import Random
+
 import numpy as np
 from DeepLearning import model
 import DataHandler.MidiDataHandler as MDH
 from DeepLearning.DeepLearningHandler import generatMusicFunction, trainDataPart
 
-def calculateSimilarity(testedFile,sourcePath,chuckSize):
+def calculateSimilarity(testedFile,sourcePath,chuckSize,randomSamples = None):
     print 'start calculating similarity may take long time'
     from scipy.spatial import distance
     midiHandler = MDH.MidiDataHandler()
@@ -15,8 +16,14 @@ def calculateSimilarity(testedFile,sourcePath,chuckSize):
     testedChunkCount = len(testedFile) - chuckSize
     if testedChunkCount <= 0:
         raise IOError('input size is bigger then chunk size')
-    similarity = np.ones((testedChunkCount,1))
-    for testedChunkStrat in range(testedChunkCount):
+    if randomSamples is not None:
+        testedChunkCount = np.random.randint(0,testedChunkCount,min(randomSamples,len(testedFile)) ).tolist()
+    else :
+        testedChunkCount = range(testedChunkCount)
+
+    similarity = np.ones((len(testedChunkCount),1))
+
+    for i , testedChunkStrat in enumerate(testedChunkCount):
         Aflat =  np.array(testedFile[testedChunkStrat : min( testedChunkStrat+chuckSize,len(testedFile))]).flatten()
         minDist = 9999
         for song in sorceSongsDict.values():
@@ -26,7 +33,7 @@ def calculateSimilarity(testedFile,sourcePath,chuckSize):
                 Bflat =np.array(song[songChunkStart:min(songChunkStart+chuckSize,len(song))]).flatten()
                 tempRes[songChunkStart] = distance.cosine( Aflat, Bflat )
             minDist = min(minDist,np.min(tempRes))
-        similarity[testedChunkStrat] = minDist
+        similarity[i] = minDist
     return (1-np.average(similarity)) *  100
 
 if __name__ == '__main__':
@@ -38,12 +45,12 @@ if __name__ == '__main__':
     if os.listdir(filedest) == []:
         data = midiHandler.flattenDirectory(filePath,filedest)
     songsDic = midiHandler.loadMidiData(filedest)
-    m = model.Model([90, 90], [30, 16] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
+    m = model.Model([300, 300], [100, 50] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
     trainDataPart(m, songsDic, 10)
     pickle.dump(m.learned_config, open(modelDest+"final_learned_config.p", "wb"))
     generatMusicFunction(m,songsDic,10,name=genFile)
     print 'calculation similarity started '
-    sim = calculateSimilarity(modelDest+genFile+'.mid',filedest,120)#64)
+    sim = calculateSimilarity(modelDest+genFile+'.mid',filedest,64,randomSamples = 50)
     with open(modelDest+"logFile.txt", "w") as text_file:
         text_file.write('calculation similarity started ')
         text_file.write('similrity : ' + str(sim) + " %")
