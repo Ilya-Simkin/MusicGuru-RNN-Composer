@@ -139,6 +139,7 @@ First a Little about the idea. We are pretty new in the world of deep learning a
 1.	The short memory Problem:  the memory of the net for a time event that happened few steps before is very short. Any value that is output in one time step becomes input in the next, but unless that same value is output again, it is lost at the next tick. To solve this, we can use a Long Short-Term Memory (LSTM) node instead of a normal node. This introduces a “memory cell” value that is passed down for multiple time steps, and which can be added to or subtracted from at each tick.
 There is plenty of information on how LSTM works in more details on the net.
 In our project we used Theano_lstm package which is an external package that add theano the LSTM neuron functions.
+
 2.	The recurrent connections allow patterns in time, but there is mechanism to attain nice chords due to the fact that each note’s output is completely independent of every other note’s output. Here the real genius of Daniel kicks in, he invented a net "biaxial RNN”:
 In normal RNN we have two axes (and one pseudo-axis):
 * there is the time axis
