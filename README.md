@@ -67,11 +67,44 @@ To make things make more sense we used an idea of a similar works we saw online,
 *	Pitch class : extra 12 features added that will be 1 at the position of the current note, starting at 'Do' for 0 and increasing by 1 per half-step, and 0 for all the others. Used to allow selection of more common chords (i.e. it's more common to have a C major chord than an E-flat major chord)
 *	Previous Vicinity: extra features that gives context for surrounding notes in the last time steps, one octave in each direction. The value at index 2(i+12) is 1 if the note at offset i from current note was played last time step, and 0 if it was not. The value at 2(i+12) + 1 is 1 if that note was articulated last time step, and 0 if it was not. (So if you play a note and hold it, first time step has 1 in both, second has it only in first. If you repeat a note, second will have 1 both times.)
 *	Previous Context : Value at index i will be the number of times any note x where (x-i-pitch class) mod 12 was played last time step. Thus if current note is "Do" and there were 2 "Mi" at the  last time step, the value at index 4 (since "Mi"  is 4 half steps above "Do" ) would be 2.
-*	Beat : Essentially a binary representation of position within the measure, assuming 4/4 time (due to the fact that we pretty much flatten the music to be 4/4 in the previse steps of midi flattening  ). With each row being one of the beat inputs, and each column being a time step, it basically just repeats the following a constant petter.
+*	Beat : Essentially a binary representation of position within the measure, assuming 4/4 time (due to the fact that we pretty much flatten the music to be 4/4 in the previse steps of midi flattening  ). With each row being one of the beat inputs, and each column being a time step, it basically just repeats the following a constant pettern.
+
+All the code That dose those manipulations on the data is in the DataHandler/MidiDataHandler file that contains a class called "MidiDataHandler" (that  mainly do the work regarding multiple midi files such as reading and converting to state matrix ).
+And the functions that adds the extra features as we just explained.
 
 ### complexity problame !!!
 A trained model outputs the conditional distribution of notes at a time step, given the all the time steps that have occurred before it. One problem with this naive formulation is that the amount of potential note configurations is too high (2N for N possible notes+ all the extra data we gave in context) to take the softmax classification approach normally language modeling.
 Instead, we found works that used something called a sigmoid cross-entropy loss function to predict the probability of whether each note class is active or not separately.
+more about tis stuff in the model section below.
+
+# The Model
+
+The model is implemented in Theano, a Python library that makes it easy to generate fast neural networks by compiling the network to GPU-optimized code and by automatically calculating Error and such for us. 
+
+First a Little about the idea. We are pretty new in the world of deep learning and while doing our research for this project we found the brilliant blog of Daniel Johnson who invented a great concept of biaxial recurrent neural Network that fits the problem perfectly due to the fact that it solved  the 2 major problem's we could not figure out:
+1.	The short memory Problem:  the memory of the net for a time event that happened few steps before is very short. Any value that is output in one time step becomes input in the next, but unless that same value is output again, it is lost at the next tick. To solve this, we can use a Long Short-Term Memory (LSTM) node instead of a normal node. This introduces a “memory cell” value that is passed down for multiple time steps, and which can be added to or subtracted from at each tick.
+There is plenty of information on how LSTM works in more details on the net.
+In our project we used Theano_lstm package which is an external package that add theano the LSTM neuron functions.
+2.	The recurrent connections allow patterns in time, but there is mechanism to attain nice chords due to the fact that each note’s output is completely independent of every other note’s output. Here the real genius of Daniel kicks in, he invented a net "biaxial RNN”:
+In normal RNN we have two axes (and one pseudo-axis): 
+* there is the time axis 
+* the note axis
+* the direction-of-computation pseudo-axis 
+Each recurrent layer transforms inputs to outputs, and also sends recurrent connections along one of these axes. 
+
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/ normalRnn.jpg " normal rnn ")(normal rnn)
+
+But in music problem domain there is no reason why they all have to send connections along the same axis. So our model will consist  of two parts,
+*  first  two layers will have connections across time steps, but are independent across notes. 
+*  two layers in the end of the net will have connections between notes, but are independent between time steps. 
+Together, this allows us to have patterns both in time and in note-space without sacrificing invariance.
+
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/biaxrnn.jpg " Biaxial  rnn ")( Biaxial  rnn)
+
+
+
+
+
 
 
 
