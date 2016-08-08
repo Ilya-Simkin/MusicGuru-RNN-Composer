@@ -27,12 +27,13 @@ MIDI (/ˈmɪdi/; short for Musical Instrument Digital Interface) is a technical 
 
 Basically a normal midi file is a set of event codded in binary with commands that create a set of notes. 
 there are many type of Events part of them have no connection to the music in the file or even has the lyrics of the song but there is notes events as well.
-![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/images/midiEvents.JPG "Midi event flow example")
+
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/midiEvents.JPG "Midi event flow example")
 
 •	Each note event has a Velocity which is the analogical form of how hard you would hit a piano key (the faster it will be louder)
 •	As well each note Event has the pitch value. It is translated to how low or high is the sound, such that lower pitch means lower note in terms of sound frequency.
 
-![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/images/pianopitchMidi.jpg "Midi Pitch To piano Note")
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/pianopitchMidi.jpg "Midi Pitch To piano Note")
 Due to the fact that we want to learn something that close to one instrument music we had to transform all the data to a pitch and velocity common for piano playing .
 
 ### Another important information we needed to think about is the time context;
