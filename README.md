@@ -69,7 +69,8 @@ if __name__ == '__main__':
 instade all the first part of the main until the generatMusicFunction
 thise function is the one that create the music with a given model
 7. calculateSimilarity : this function calculate the similarity of the composition to parts of data in the train set ...explained in the results section.
-8. enjoy !!
+8. listen to the music we made in the samples folder
+9. enjoy !!
 
 # Data Handeling
 As mentioned before our project is aiming to work with Musical data so first of all we needed to find a proper digital music format to work with. Obviously we stopped our choice on midi files due the fact that they the best representation of digital music, other choices were the more popular and commonly used mp3 files but those files weight much more and have much more analogical structure. We wanted to work with something closer to sheet music even thought of creating a computer vision solution to scan and translate real sheet music of notes but it would add much unneeded complexity.
@@ -136,6 +137,7 @@ more about tis stuff in the model section below.
 The model is implemented in Theano, a Python library that makes it easy to generate fast neural networks by compiling the network to GPU-optimized code and by automatically calculating Error and such for us.
 
 First a Little about the idea. We are pretty new in the world of deep learning and while doing our research for this project we found the brilliant blog of Daniel Johnson who invented a great concept of biaxial recurrent neural Network that fits the problem perfectly due to the fact that it solved  the 2 major problem's we could not figure out:
+
 1.	The short memory Problem:  the memory of the net for a time event that happened few steps before is very short. Any value that is output in one time step becomes input in the next, but unless that same value is output again, it is lost at the next tick. To solve this, we can use a Long Short-Term Memory (LSTM) node instead of a normal node. This introduces a “memory cell” value that is passed down for multiple time steps, and which can be added to or subtracted from at each tick.
 There is plenty of information on how LSTM works in more details on the net.
 In our project we used Theano_lstm package which is an external package that add theano the LSTM neuron functions.
