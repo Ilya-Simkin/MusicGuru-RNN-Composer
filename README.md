@@ -101,6 +101,26 @@ Together, this allows us to have patterns both in time and in note-space without
 
 ![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/biaxrnn.JPG " Biaxial  rnn ")( Biaxial  rnn)
 
+### output layer: 
+After the last LSTM layer , there is a simple, non-recurrent output layer that outputs 2 values:
+* Play Probability, which is the probability that this note should be chosen to be played
+* Articulate Probability, which is the probability the note is continuse, given that it is played. (This is only used to determine      re-pressing for held notes.)
+
+## training 
+During training, we can feed in a randomly-selected batch of short music segments. We then take all of the output probabilities, and calculate the cross-entropy, which is a fancy way of saying we find the likelihood of generating the correct output given the output probabilities.
+After some manipulation we plug the results in as the cost into the AdaDelta optimizer which is a gradient decent implemintation given by theano and let it optimize our weights.
+the structure of our net  allows us an  effectively utilize the GPU, which is good at multiplying huge matrices. so it was worth the time to install the cuda suport correctly.
+
+To prevent our model from being overfit (which would mean learning specific parts of specific pieces instead of overall patterns and features), we can use something called dropout. 
+Applying dropout essentially means randomly removing half(or any other value that is given to the train function as 0.5 defualt:
+```{r changeDropOut, message=FALSE, results='hide'}
+   m = model.Model([300, 300], [100, 50] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
+```
+ )
+of the hidden nodes from each layer during each training step. 
+This prevents the nodes from gravitating toward fragile dependencies on each other and instead promotes specialization. 
+(We can implement this by multiplying a mask with the outputs of each layer. Nodes are "removed" by zeroing their output in the given time step.)
+
 
 
 
