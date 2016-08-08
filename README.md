@@ -92,14 +92,14 @@ In normal RNN we have two axes (and one pseudo-axis):
 * the direction-of-computation pseudo-axis 
 Each recurrent layer transforms inputs to outputs, and also sends recurrent connections along one of these axes. 
 
-![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/ normalRnn.jpg " normal rnn ")(normal rnn)
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/normalRnn.JPG " normal rnn ")(normal rnn)
 
 But in music problem domain there is no reason why they all have to send connections along the same axis. So our model will consist  of two parts,
 *  first  two layers will have connections across time steps, but are independent across notes. 
 *  two layers in the end of the net will have connections between notes, but are independent between time steps. 
 Together, this allows us to have patterns both in time and in note-space without sacrificing invariance.
 
-![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/biaxrnn.jpg " Biaxial  rnn ")( Biaxial  rnn)
+![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/MusicGuru-RNN-Composer/master/images/biaxrnn.JPG " Biaxial  rnn ")( Biaxial  rnn)
 
 
 
