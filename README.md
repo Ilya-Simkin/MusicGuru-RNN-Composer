@@ -17,6 +17,43 @@ in this work we are trying to train the computer to compose music which is as we
 
 This post assumes a familiarity with machine learning and neural networks. For a good overview of RNN's, I highly recommend reading Andrej Karpathy's excellent blog post [Here](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) for an in-depth explanation.
 
+# How To Make it Run :
+So first of all we will explain how to make the code run and what each thing dose:
+1. after downloading the code go to the DeepLearning/main file there in the main script section you will see :
+```{r main , message=FALSE, results='hide'}
+if __name__ == '__main__':
+   midiHandler = MDH.MidiDataHandler()
+    filePath = '.\\midi\\'
+    filedest = '.\\flattnMidi\\'
+    modelDest = '.\\output\\'
+    genFile = "composition8"
+    if os.listdir(filedest) == []:
+        data = midiHandler.flattenDirectory(filePath,filedest)
+    songsDic = midiHandler.loadMidiData(filedest)
+    m = model.Model([90, 90], [30, 16] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
+    trainDataPart(m, songsDic, 10)
+    pickle.dump(m.learned_config, open(modelDest+"final_learned_config.p", "wb"))
+    generatMusicFunction(m,songsDic,10,name=genFile)
+    print 'calculation similarity started '
+    sim = calculateSimilarity(modelDest+genFile+'.mid',filedest,120)#64)
+    with open(modelDest+"logFile.txt", "w") as text_file:
+        text_file.write('calculation similarity started ')
+        text_file.write('similrity : ' + str(sim) + " %")
+    print 'similrity : ' + str(sim) + " %"
+ ```
+2. set the filePath to the directory that holds a midi data to train the model with (there is a big midi collection already by midi style in the folder called musicCollection)
+3. check there is nothing in the filedest folder!!! (must be empty the flatten files genereted on the run gose there)
+4. set modelDest to where the model and the logs file will be saved 
+5. set genFile to the name of the composition that will be generated when the training is done 
+6. !! you can use pre trained models already in the project default modelDest folder (output) it was trained for 4000 epochs on a 100 classic music midi files. to do so just use pickel load function like this :
+```{r loadModel , message=FALSE, results='hide'}
+m = pickle.load( open(modelDest+"final_learned_config.p", "rb" ) )
+```
+instade all the first part of the main until the generatMusicFunction 
+thise function is the one that create the music with a given model
+7. calculateSimilarity : this function calculate the similarity of the composition to parts of data in the train set ...explained in the results section. 
+8. enjoy !!
+
 # Data Handeling
 As mentioned before our project is aiming to work with Musical data so first of all we needed to find a proper digital music format to work with. Obviously we stopped our choice on midi files due the fact that they the best representation of digital music, other choices were the more popular and commonly used mp3 files but those files weight much more and have much more analogical structure. We wanted to work with something closer to sheet music even thought of creating a computer vision solution to scan and translate real sheet music of notes but it would add much unneeded complexity. 
 
@@ -120,6 +157,7 @@ Applying dropout essentially means randomly removing half(or any other value tha
 of the hidden nodes from each layer during each training step. 
 This prevents the nodes from gravitating toward fragile dependencies on each other and instead promotes specialization. 
 (We can implement this by multiplying a mask with the outputs of each layer. Nodes are "removed" by zeroing their output in the given time step.)
+
 
 
 
