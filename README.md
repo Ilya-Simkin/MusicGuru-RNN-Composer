@@ -233,8 +233,10 @@ def calculateSimilarity(testedFile,sourcePath,chuckSize,randomSamples = None):
 ```
 the function has an opi
 
-### in the run with the model we got about 87.54 % of accuracy by that function of similarity! 
+### in the run with the model we got about 73.54 % of accuracy by that function of similarity! 
 we think it is grete and it leave some space for improvization while holding enough of the original data music ideas 
+here we had to stop the process of training after 4100 epochs due to the long time it took ... the due date simply got us 
+we think that with slightly bigger net and better machine and maybe larger data set of more common music midi files we could easilly get even higher results.
 
 # chalanges :
 
