@@ -46,8 +46,25 @@ if __name__ == '__main__':
 4. set modelDest to where the model and the logs file will be saved 
 5. set genFile to the name of the composition that will be generated when the training is done 
 6. !! you can use pre trained models already in the project default modelDest folder (output) it was trained for 4000 epochs on a 100 classic music midi files. to do so just use pickel load function like this :
+and make main  look like this 
 ```{r loadModel , message=FALSE, results='hide'}
-m = pickle.load( open(modelDest+"final_learned_config.p", "rb" ) )
+if __name__ == '__main__':
+   midiHandler = MDH.MidiDataHandler()
+    filePath = '.\\midi\\'
+    filedest = '.\\flattnMidi\\'
+    modelDest = '.\\output\\'
+    genFile = "composition8"
+    if os.listdir(filedest) == []:
+        data = midiHandler.flattenDirectory(filePath,filedest)
+    songsDic = midiHandler.loadMidiData(filedest)
+    m = model.Model([300, 300], [100, 50] ,MDH.NotesLowBound ,MDH.NotesUpperBound, dropout=0.5)
+    # trainDataPart(m, songsDic, 8000)
+    # pickle.dump(m.learned_config, open("output/final_learned_config.p", "wb"))
+    mlean = pickle.load( open("output/params4100.p", "rb")) # here you enter the model saved 
+    m.learned_config = mlean
+    howManyCreate = 10
+    for i in range(howManyCreate):
+        generatMusicFunction(m,songsDic,10,name=genFile+"test_"+str(i))
 ```
 instade all the first part of the main until the generatMusicFunction 
 thise function is the one that create the music with a given model
